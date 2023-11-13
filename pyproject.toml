@@ -3,6 +3,7 @@ name = "py-valid-proxy"
 version = "0.1.0"
 description = ""
 authors = ["Suvorinov Oleg <suvorinovoleg@yandex.ru>"]
+homepage="https://github.com/suvorinov/py_valid_proxy.git"
 readme = "README.md"
 
 [tool.poetry.dependencies]
