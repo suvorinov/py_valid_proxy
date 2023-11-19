@@ -8,7 +8,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+requests = "^2.31.0"
+geoip2 = "^4.7.0"
 
+[tool.poetry.scripts]
+valid_proxy = "py_valid_proxy.main:main"
 
 [build-system]
 requires = ["poetry-core"]
