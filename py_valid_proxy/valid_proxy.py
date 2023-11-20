@@ -2,8 +2,9 @@
 # @Author: Suvorinov Oleg
 # @Date:   2023-11-19 13:52:25
 # @Last Modified by:   Suvorinov Oleg
-# @Last Modified time: 2023-11-19 19:23:54
+# @Last Modified time: 2023-11-20 18:04:17
 
+import os
 import time
 from typing import Dict
 import json
@@ -15,8 +16,12 @@ USER_AGENT = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 F
 
 
 class ValidProxyException(
-        requests.exceptions.ConnectionError,
-        requests.exceptions.Timeout):
+        requests.exceptions.MissingSchema,
+        requests.exceptions.InvalidSchema,
+        requests.exceptions.ReadTimeout,
+        requests.exceptions.InvalidProxyURL,
+        requests.exceptions.ProxyError,
+        requests.exceptions.JSONDecodeError):
     pass
 
 
@@ -26,10 +31,10 @@ def get_origin_ip(timeout: int = 5) -> str:
             'http://httpbin.org/get',
             headers={"User-Agent": USER_AGENT},
             timeout=timeout
-        )
-    except Exception:
+        ).json()
+    except ValidProxyException:
         return ''
-    return resp.json().get('origin', '')
+    return resp.get('origin', '')
 
 
 def valid_proxy(
@@ -83,9 +88,10 @@ def valid_proxy(
         return origin
 
     def _country(host):
+        base_dir = os.path.dirname(os.path.realpath(__file__))
         try:
             geoip_reader = geoip2.database.Reader(
-                'data/GeoLite2-Country.mmdb'
+                os.path.join(base_dir, 'data/GeoLite2-Country.mmdb')
             )
             country = geoip_reader.country(host).country.iso_code
         except Exception:

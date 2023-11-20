@@ -46,4 +46,18 @@ else:
 	print('is dead')
 ```
 
-[![asciicast](https://asciinema.org/a/hzaN1Z147zqrFqrk8s2299ve1.svg)](https://asciinema.org/a/hzaN1Z147zqrFqrk8s2299ve1)
+```shell
+$ poetry run valid_proxy https://50.207.199.85:80 -l
+Host: 50.207.199.85
+Port: 80
+Scheme: https
+Response time: 0.51
+Export address: []
+Anonymity: transparent
+Country : US
+https://50.207.199.85:80 ... alive
+
+$ poetry run valid_proxy http://50.207.199.85:80 -l
+INFO:py_valid_proxy.main: HTTPConnectionPool(host='50.207.199.85', port=80): Max retries exceeded with url: http://httpbin.org/get?show_env=1&cur=1700497583.799429 (Caused by ProxyError('Unable to connect to proxy', ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x7f1219ed0750>, 'Connection to 50.207.199.85 timed out. (connect timeout=5)')))
+http://50.207.199.85:80 ... is dead
+```
