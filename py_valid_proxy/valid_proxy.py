@@ -2,15 +2,17 @@
 # @Author: Suvorinov Oleg
 # @Date:   2023-11-19 13:52:25
 # @Last Modified by:   Suvorinov Oleg
-# @Last Modified time: 2023-11-20 18:04:17
+# @Last Modified time: 2023-12-21 12:30:43
 
 import os
 import time
-from typing import Dict
+from typing import List
 import json
+from dataclasses import dataclass, field
 
 import geoip2.database
 import requests
+from dataclasses_json import dataclass_json
 
 USER_AGENT = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0"  # noqa
 
@@ -23,6 +25,19 @@ class ValidProxyException(
         requests.exceptions.ProxyError,
         requests.exceptions.JSONDecodeError):
     pass
+
+
+@dataclass_json
+@dataclass
+class Proxy:
+    scheme: str = field(default='')
+    host: str = field(default='')
+    port: int = field(default=80)
+    export_address: List[str] = field(default_factory=list)
+    anonymity: str = field(default='')
+    country: str = field(default='US')
+    response_time: float = field(default=0.0)
+    to_from: str = field(default='valid_proxy')
 
 
 def get_origin_ip(timeout: int = 5) -> str:
@@ -41,7 +56,7 @@ def valid_proxy(
         host: str,
         port: int,
         scheme: str = 'http',
-        timeout: int = 5) -> Dict:
+        timeout: int = 5) -> Proxy:
     """Valid proxy server ('alive' or 'dead')
 
     Parameters
@@ -57,21 +72,12 @@ def valid_proxy(
     Returns
     -------
         None if proxy is 'dead'
-        dict if proxy is 'alive'
-        {
-            "scheme": str, # http, https
-            "host": str,
-            "port": int,
-            "export_address": list[str],
-            "anonymity": str, # transparent, anonymous, high_anonymous # noqa
-            "country": str # ISO Code 
-            "response_time": float
-        }
+        class Proxy if proxy is 'alive'
     """
-    _proxy = dict()
+    _proxy = None
     origin_ip = get_origin_ip()
 
-    def _anonymity(origin_ip, response):
+    def _anonymity(origin_ip, response) -> str:
         via = response.get('headers', {}).get('Via', '')
 
         if origin_ip in json.dumps(response):
@@ -81,7 +87,7 @@ def valid_proxy(
         else:
             return 'high_anonymous'
 
-    def _export_address(origin_ip, response):
+    def _export_address(origin_ip, response) -> str:
         origin = response.get('origin', '').split(', ')
         if origin_ip in origin:
             origin.remove(origin_ip)
@@ -103,6 +109,7 @@ def valid_proxy(
     request_proxies = {
         scheme: "%s:%s" % (host, port)
     }
+
     url = "%s://httpbin.org/get?show_env=1&cur=%s" % ('http', request_begin)
     try:
         _r = requests.get(
@@ -112,16 +119,17 @@ def valid_proxy(
             timeout=timeout
         ).json()
     except ValidProxyException:
-        return None
+        return _proxy
 
     request_end = time.time()
-
-    _proxy["scheme"] = scheme
-    _proxy["host"] = host
-    _proxy["port"] = port
-    _proxy["export_address"] = _export_address(origin_ip, _r)
-    _proxy["anonymity"] = _anonymity(origin_ip, _r)
-    _proxy["country"] = _country(host)
-    _proxy["response_time"] = round(request_end - request_begin, 2)
+    _proxy = Proxy(
+        scheme,
+        host,
+        port,
+        _export_address(origin_ip, _r),
+        _anonymity(origin_ip, _r),
+        _country(host),
+        round(request_end - request_begin, 2)  # response_time
+    )
 
     return _proxy

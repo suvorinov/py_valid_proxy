@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py-valid-proxy"
-version = "0.2.5"
+version = "0.2.6"
 description = ""
 authors = ["Suvorinov Oleg <suvorinovoleg@yandex.ru>"]
 homepage="https://github.com/suvorinov/py_valid_proxy.git"
@@ -10,6 +10,8 @@ readme = "README.md"
 python = "^3.11"
 requests = "^2.31.0"
 geoip2 = "^4.7.0"
+dataclasses-json = "^0.6.3"
+rich = "^13.7.0"
 
 [tool.poetry.scripts]
 valid_proxy = "py_valid_proxy.main:main"
