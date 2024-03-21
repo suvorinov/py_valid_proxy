@@ -2,11 +2,10 @@
 # @Author: Suvorinov Oleg
 # @Date:   2023-11-13 11:20:47
 # @Last Modified by:   Suvorinov Oleg
-# @Last Modified time: 2023-12-13 08:43:46
+# @Last Modified time: 2024-03-12 19:37:13
 
 import sys
 import argparse
-from urllib.parse import urlparse
 import pkg_resources
 import re
 
@@ -15,9 +14,10 @@ from rich.console import Console
 from py_valid_proxy import valid_proxy
 
 
-def valid_proxy_url(url: str) -> bool:
-    regex = r"^(http|https|socks4|socks5):\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}"  # noqa
-    matches = re.findall(regex, url, re.MULTILINE)
+def valid_proxy_ip(ip: str) -> bool:
+    # regex = r"^(http|https|socks4|socks5):\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}"  # noqa
+    regex = r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"  # noqa
+    matches = re.findall(regex, ip, re.MULTILINE)
     if matches:
         return True
     return False
@@ -35,8 +35,26 @@ def main(args=None):
     )
 
     parser.add_argument(
+        '-ip',
+        type=str,
+        required=True,
+        help='IP address of proxy server')
+
+    parser.add_argument(
+        '-p',
+        type=int,
+        required=True,
+        help='PORT of proxy server')
+
+    parser.add_argument(
+        '-s',
+        type=str,
+        choices=['http', 'https'],
+        default='http',
+        help='SCHEME of proxy server')
+
+    parser.add_argument(
         '-t',
-        '--timeout',
         type=int,
         default=5,
         help='The connect timeout is the number of seconds')
@@ -48,47 +66,33 @@ def main(args=None):
         version=_prog_version
     )
 
-    parser.add_argument(
-        'proxy',
-        help='Proxy server URL, '
-    )
-
     args = parser.parse_args()
 
     console = Console()
+
+    if args.ip:
+        if not valid_proxy_ip(args.ip):
+            console.print(
+                f"Oops, something is wrong with the proxy IP {args.ip}",
+                style="red"
+            )
+            sys.exit(1)
+
     timeout = 5
-    if args.timeout:
-        timeout = args.timeout
+    if args.t:
+        timeout = args.t
 
-    if args.proxy:
-        if not valid_proxy_url(args.proxy):
-            console.print(
-                f"Oops, something is wrong with the proxy URL {args.proxy}",
-                style="red"
-            )
-            sys.exit(1)
-
-        result = urlparse(args.proxy.lower())
-        if not result.scheme or \
-                not result.netloc or \
-                not result.hostname or \
-                not result.port:
-            console.print(
-                f"Oops, something is wrong with the proxy URL {args.proxy}",
-                style="red"
-            )
-            sys.exit(1)
-
-        try:
-            with console.status("Validates..."):
-                proxy = valid_proxy(result.hostname, result.port, result.scheme, timeout)  # noqa
-        except Exception:
-            console.print(f"{args.proxy} ... is dead", style="bold red")
-        else:
-            console.print(f"{args.proxy} ... is alive", style="bold green")
-            console.print(f"anonymity: {proxy.anonymity}")
-            console.print(f"country: {proxy.country}")
-            console.print(f"response time: {proxy.response_time} (secs)")
+    try:
+        with console.status("Validates..."):
+            proxy = valid_proxy(args.ip, args.p, args.s, timeout)  # noqa
+    except Exception:
+        console.print(f"{args.s}://{args.ip}:{args.p} ... is dead", style="bold red") # noqa
+    else:
+        console.print(f"{args.s}://{args.ip}:{args.p} ... is alive", style="bold green") # noqa
+        console.print(f"anonymity: {proxy.anonymity}")
+        console.print(f"country: {proxy.country}")
+        console.print(f"response time: {proxy.response_time} (secs)")
+        console.print(proxy.to_json())
 
 
 if __name__ == '__main__':

@@ -2,10 +2,11 @@
 # @Author: Suvorinov Oleg
 # @Date:   2023-11-19 13:52:25
 # @Last Modified by:   Suvorinov Oleg
-# @Last Modified time: 2023-12-21 12:30:43
+# @Last Modified time: 2024-03-12 20:02:20
 
 import os
 import time
+import re
 from typing import List
 import json
 from dataclasses import dataclass, field
@@ -52,6 +53,19 @@ def get_origin_ip(timeout: int = 5) -> str:
     return resp.get('origin', '')
 
 
+def valid_proxy_ip(ip_address: str) -> bool:
+    match = re.match(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", ip_address) # noqa
+
+    if not bool(match):
+        return False
+
+    bytes = ip_address.split(".")
+    for ip_byte in bytes:
+        if int(ip_byte) < 0 or int(ip_byte) > 255:
+            return False
+    return True
+
+
 def valid_proxy(
         host: str,
         port: int,
@@ -75,6 +89,9 @@ def valid_proxy(
         class Proxy if proxy is 'alive'
     """
     _proxy = None
+    if not valid_proxy_ip(host):
+        raise ValidProxyException
+
     origin_ip = get_origin_ip()
 
     def _anonymity(origin_ip, response) -> str:
