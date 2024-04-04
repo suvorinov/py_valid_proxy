@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "py-valid-proxy"
-version = "0.2.7"
-description = ""
+version = "0.2.8"
+description = "Valid proxy server ('alive' or 'dead')"
 authors = ["Suvorinov Oleg <suvorinovoleg@yandex.ru>"]
 homepage="https://github.com/suvorinov/py_valid_proxy.git"
 readme = "README.md"
