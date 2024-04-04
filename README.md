@@ -38,18 +38,18 @@ else:
 ```
 
 ```shell
-$ valid_proxy http://12.186.205.120:80
+$ valid_proxy -ip 12.186.205.120 -p 80 -s http
 http://12.186.205.120:80 ... is alive
 anonymity: high_anonymous
 country: US
 response time: 4.71 (secs)
 
-$ valid_proxy https://12.186.205.120:80
+$ valid_proxy -ip 12.186.205.120 -p 80 -s https 
 https://12.186.205.120:80 ... is alive
 anonymity: transparent
 country: US
 response time: 0.5 (secs)
 
-$ valid_proxy http://2.189.59.54:80
+$ valid_proxy -ip 2.189.59.54 -p 80
 http://2.189.59.54:80 ... is dead
 ```

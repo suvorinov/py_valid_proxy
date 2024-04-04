@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py-valid-proxy"
-version = "0.2.6"
+version = "0.2.7"
 description = ""
 authors = ["Suvorinov Oleg <suvorinovoleg@yandex.ru>"]
 homepage="https://github.com/suvorinov/py_valid_proxy.git"

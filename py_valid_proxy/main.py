@@ -2,7 +2,7 @@
 # @Author: Suvorinov Oleg
 # @Date:   2023-11-13 11:20:47
 # @Last Modified by:   Suvorinov Oleg
-# @Last Modified time: 2024-03-12 19:37:13
+# @Last Modified time: 2024-04-04 10:46:27
 
 import sys
 import argparse
@@ -92,7 +92,6 @@ def main(args=None):
         console.print(f"anonymity: {proxy.anonymity}")
         console.print(f"country: {proxy.country}")
         console.print(f"response time: {proxy.response_time} (secs)")
-        console.print(proxy.to_json())
 
 
 if __name__ == '__main__':

@@ -2,12 +2,13 @@
 # @Author: Suvorinov Oleg
 # @Date:   2023-11-19 13:52:25
 # @Last Modified by:   Suvorinov Oleg
-# @Last Modified time: 2024-03-12 20:02:20
+# @Last Modified time: 2024-04-04 10:39:33
 
 import os
 import time
 import re
 from typing import List
+from datetime import datetime
 import json
 from dataclasses import dataclass, field
 
@@ -28,17 +29,21 @@ class ValidProxyException(
     pass
 
 
+now = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+
 @dataclass_json
 @dataclass
 class Proxy:
-    scheme: str = field(default='')
+    scheme: str = field(default='http')
     host: str = field(default='')
     port: int = field(default=80)
     export_address: List[str] = field(default_factory=list)
-    anonymity: str = field(default='')
+    anonymity: str = field(default='transparent')
     country: str = field(default='US')
     response_time: float = field(default=0.0)
-    to_from: str = field(default='valid_proxy')
+    to_from: str = field(default='')
+    last_checked: str = field(default=now)
 
 
 def get_origin_ip(timeout: int = 5) -> str:
@@ -89,7 +94,7 @@ def valid_proxy(
         class Proxy if proxy is 'alive'
     """
     _proxy = None
-    if not valid_proxy_ip(host):
+    if not valid_proxy_ip(host): 
         raise ValidProxyException
 
     origin_ip = get_origin_ip()
