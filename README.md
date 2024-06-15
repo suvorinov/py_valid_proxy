@@ -39,17 +39,18 @@ else:
 
 ```shell
 $ valid_proxy -h
-usage: valid_proxy [-h] -ip IP -p P [-s {http,https}] [-t T] [-V]
+usage: valid_proxy [-h] -ip IP -p P [-s {http,https,socks4,socks5}] [-t T] [-V]
 
 Valid the functionality of the proxy server
 
 options:
-  -h, --help       show this help message and exit
-  -ip IP           IP address of proxy server
-  -p P             PORT of proxy server
-  -s {http,https}  SCHEME of proxy server
-  -t T             The connect timeout is the number of seconds
-  -V, --version    show program's version number and exit
+  -h, --help            show this help message and exit
+  -ip IP                IP address of proxy server
+  -p P                  PORT of proxy server
+  -s {http,https,socks4,socks5}
+                        SCHEME of proxy server
+  -t T                  The connect timeout is the number of seconds
+  -V, --version         show program's version number and exit
 
 $ valid_proxy -ip 12.186.205.120 -p 80 -s http
 http://12.186.205.120:80 ... is alive

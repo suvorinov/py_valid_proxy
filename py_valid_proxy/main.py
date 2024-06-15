@@ -2,7 +2,7 @@
 # @Author: Suvorinov Oleg
 # @Date:   2023-11-13 11:20:47
 # @Last Modified by:   Suvorinov Oleg
-# @Last Modified time: 2024-04-04 10:46:27
+# @Last Modified time: 2024-06-15 08:54:30
 
 import sys
 import argparse
@@ -49,7 +49,7 @@ def main(args=None):
     parser.add_argument(
         '-s',
         type=str,
-        choices=['http', 'https'],
+        choices=['http', 'https', 'socks4', 'socks5'],
         default='http',
         help='SCHEME of proxy server')
 

@@ -2,7 +2,7 @@
 # @Author: Suvorinov Oleg
 # @Date:   2023-11-19 13:52:25
 # @Last Modified by:   Suvorinov Oleg
-# @Last Modified time: 2024-04-04 10:39:33
+# @Last Modified time: 2024-06-15 08:59:31
 
 import os
 import time
@@ -94,7 +94,7 @@ def valid_proxy(
         class Proxy if proxy is 'alive'
     """
     _proxy = None
-    if not valid_proxy_ip(host): 
+    if not valid_proxy_ip(host):
         raise ValidProxyException
 
     origin_ip = get_origin_ip()
@@ -117,6 +117,7 @@ def valid_proxy(
 
     def _country(host):
         base_dir = os.path.dirname(os.path.realpath(__file__))
+        print(os.path.join(base_dir, 'data/GeoLite2-Country.mmdb'))
         try:
             geoip_reader = geoip2.database.Reader(
                 os.path.join(base_dir, 'data/GeoLite2-Country.mmdb')
